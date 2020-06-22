@@ -29,3 +29,4 @@ for nani1 in newstit1:
 count=0
 for count in range(0,len(newstit)):
     pakToday_entertainment_list[count]=[list1[count],listt[count],list2[count],list3[count]]
+print(pakToday_entertainment_list)

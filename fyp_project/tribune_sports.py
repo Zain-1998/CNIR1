@@ -12,3 +12,4 @@ for nani in allnews:
     news_title=nani.find('h2').find('a').get_text()
     tribune_sports_list[count]=[news_title,image_url,link,"Express Tribune"]
     count+=1
+print(tribune_sports_list)

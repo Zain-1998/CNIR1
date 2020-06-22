@@ -2,32 +2,110 @@ from flask import Flask,render_template,url_for,request,redirect,session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-from latest_nation import latest_nation_list
-from latest_dawn import latest_dawn_list
-from latest_pakistan_today import latest_pakToday_list
-from latest_daily_pakistan import latest_dailyPak_list
-from latest_tribune import latest_tribune_list
+import requests
+import crawl
 
-from nation_sports import nation_sports_list
-from nation_business import nation_business_list
-from nation_entertainment import nation_entertainment_list
-from nation_pakistan import nation_pakistan_list    
-from dailyPak_sports import dailyPak_sports_list
-from dailyPak_business import dailyPak_business_list
-from dailyPak_entertainment import dailyPak_entertainment_list
-from dailyPak_pakistan import dailyPak_pakistan_list
-from dawn_sports import dawn_sports_list
-from dawn_business import dawn_business_list
-from dawn_entertainment import dawn_entertainment_list
-from dawn_pakistan import dawn_pakistan_list
-from pakToday_sports import pakToday_sports_list
-from pakToday_business import pakToday_business_list
-from pakToday_entertainment import pakToday_entertainment_list
-from pakToday_pakistan import pakToday_pakistan_list
-from tribune_sports import tribune_sports_list
-from tribune_bussines import tribune_bussiness_list
-from tribune_entertainment import tribune_entertainment_list
-from tribune_pakistan import tribune_pakistan_list
+try:
+    from latest_nation import latest_nation_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    latest_nation_list={}
+try:
+    from latest_dawn import latest_dawn_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    latest_dawn_list={}
+try:
+    from latest_pakistan_today import latest_pakToday_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    latest_pakToday_list={}
+try:
+    from latest_daily_pakistan import latest_dailyPak_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    latest_dailyPak_list={}
+try:
+    from latest_tribune import latest_tribune_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    latest_tribune_list={}
+
+try:
+    from nation_sports import nation_sports_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    nation_sports_list={}
+try:
+    from nation_business import nation_business_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    nation_business_list={}
+try:
+    from nation_entertainment import nation_entertainment_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    nation_entertainment_list={}
+try:
+    from nation_pakistan import nation_pakistan_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    nation_pakistan_list={}
+try:
+    from dailyPak_sports import dailyPak_sports_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    dailyPak_sports_list={}
+try:
+    from dailyPak_business import dailyPak_business_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    dailyPak_business_list={}
+try:
+    from dailyPak_entertainment import dailyPak_entertainment_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    dailyPak_entertainment_list={}
+try:
+    from dailyPak_pakistan import dailyPak_pakistan_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    dailyPak_pakistan_list={}
+try:
+    from dawn_sports import dawn_sports_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    dawn_sports_list={}
+try:    
+    from dawn_business import dawn_business_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    dawn_business_list={}
+try:
+    from dawn_entertainment import dawn_entertainment_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    dawn_entertainment_list={}
+try:
+    from dawn_pakistan import dawn_pakistan_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    dawn_pakistan_list={}
+try:
+    from pakToday_sports import pakToday_sports_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    pakToday_sports_list={}
+try:
+    from pakToday_entertainment import pakToday_entertainment_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    pakToday_entertainment_list={}
+try:
+    from pakToday_business import pakToday_business_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    pakToday_business_list={}
+try:
+    from pakToday_pakistan import pakToday_pakistan_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    pakToday_pakistan_list={}
+try:
+    from tribune_sports import tribune_sports_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    tribune_sports_list={}
+try:
+    from tribune_bussines import tribune_bussiness_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    tribune_bussiness_list={}
+try:
+    from tribune_entertainment import tribune_entertainment_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    tribune_entertainment_list={}
+try:
+    from tribune_pakistan import tribune_pakistan_list
+except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
+    tribune_pakistan_list={}
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///databases/user_databases/cnir.db'
@@ -35,7 +113,7 @@ app.secret_key="cnirsecretkeyforsesstion"
 db=SQLAlchemy(app)
 class search_history(db.Model):
     search_id=db.Column(db.Integer,primary_key=True)
-    search_keywords=db.Column(db.String(200),nullable=False)
+    search_keywords=db.Column(db.String(200),nullable=False,unique=True)
     search_datetime=db.Column(db.DateTime,default=datetime.now)
     user_id=db.Column(db.Integer,nullable=False)
     def __repr__(self):
@@ -59,10 +137,9 @@ class user_interest(db.Model):
 def index():
     if request.method=='POST':
         search_keyword=request.form['searchbar']
-        try:
-            return redirect('/')
-        except:
-            return 'There was an issue searching your News.'
+        news = search_keyword
+        my_data=crawl.detect_news(news)
+        return render_template('index.html',get_my_data=my_data,get_search_keyword=search_keyword)
     elif "id" in session:
         return redirect(url_for("user_index"))
     else:
@@ -70,15 +147,18 @@ def index():
 @app.route('/user-index',methods=['POST','GET'])
 def user_index():
     if request.method=='POST' and "id" in session:
+        search_keyword=request.form['searchbar']
+        news = search_keyword
+        my_data=crawl.detect_news(news)
         get_keywords=request.form['searchbar']
         get_id=session["id"]
         add_search=search_history(search_keywords=get_keywords,user_id=get_id)
         try:
             db.session.add(add_search)
             db.session.commit()
-            return redirect('/user-index')
+            return render_template('user_index.html',get_my_data=my_data,get_search_keyword=search_keyword)
         except:
-            return 'There was an issue searching your News.'
+            return render_template('user_index.html',get_my_data=my_data,get_search_keyword=search_keyword) 
     elif "user" in session:
         account=session["user"]
         return render_template('user_index.html',accounts=account)
@@ -193,6 +273,8 @@ def signin():
             session["user"]=account.user_firstname
             session["id"]=account.user_id
             return redirect('/user-index')
+    if "id" in session:
+        return redirect('/dashboard')
     else:
         return render_template('signin.html')
 @app.route('/signup',methods=['POST','GET'])
@@ -242,7 +324,6 @@ def change_password():
     if request.method == 'POST':
         get_id=session["id"]
         get_password=request.form['old_password']
-        get_new_password=request.form['new_password']
         get_confirm_password=request.form['confirm_new_password']
         user=user_account.query.filter_by(user_id=get_id).first()
         if user.user_password==get_password:

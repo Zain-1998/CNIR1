@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-pagelink =requests.get('https://en.dailypakistan.com.pk/business')
+pagelink =requests.get('https://en.dailypakistan.com.pk/business')   
 soup=BeautifulSoup(pagelink.content,'html.parser')
 allnews=soup.findAll(class_='col-sm-6')
 count=0
@@ -13,3 +13,4 @@ for all_data in allnews:
     news_title=nani.find('div').get('alt')
     dailyPak_business_list[count]=[news_title,image_url,link,"Daily Pakistan"]
     count+=1
+print(dailyPak_business_list)

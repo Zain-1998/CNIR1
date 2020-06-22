@@ -26,7 +26,7 @@ for nani1 in newstit1:
 count=0
 for count in range(0,len(newstit)):
     latest_pakToday_list[count]=[list1[count],list[count],list2[count],list3[count]]
- 
+print(latest_pakToday_list) 
     # df = pd.DataFrame.from_dict(news_list_1,orient='index', columns=['title','text','image','link','source'])
     # df.to_csv('latest_news_pakistantoday.csv', mode='a',header=False,index=False)
 

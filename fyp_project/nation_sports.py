@@ -27,3 +27,4 @@ for nani1 in newstit1:
 count=0
 for count in range(0,len(newstit)):
     nation_sports_list[count]=[list2[count],list3[count],list1[count],list4[count]]
+print(nation_sports_list)

@@ -11,3 +11,4 @@ for nani in allnews:
     link=nani.find('h2').find('a').get('href')
     latest_tribune_list[count]=[news_title,image_url,link,"Express Tribune"]
     count+=1
+print(latest_tribune_list)

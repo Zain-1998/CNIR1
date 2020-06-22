@@ -13,3 +13,4 @@ for all_data in allnews:
     news_title=nani.find('div').get('alt')
     dailyPak_entertainment_list[count]=[news_title,image_url,link,"Daily Pakistan"]
     count+=1
+print(dailyPak_entertainment_list)

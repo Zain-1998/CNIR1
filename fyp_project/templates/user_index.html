@@ -84,10 +84,38 @@
             </div>
         </form>
     </div>
+
+    {% if get_my_data %}
+    <div class="content">
+            <h3>Search Result for: <q>{{get_search_keyword}}</q> </h3>
+            <h3>Save News </h3>
+                    <br>
+                    <div style="overflow-x: auto; max-height: 2000px;">
+                        <table>
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Source</th>
+                                <th>Link</th>
+                            </tr>
+                            {% for news in get_my_data %}
+                                <tr>
+                                    <td>{{get_my_data[news][0]}}</td>
+                                    <td>{{get_my_data[news][1]}}</td>
+                                    <td>{{get_my_data[news][3]}}</td>
+                                    <td><a href="{{get_my_data[news][2]}}" target="_blank">{{get_my_data[news][2]}}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+        {% endif %}
+        </div>
     <!------------Banner---------------->
     <section id="banner">
         <div class="container">
+            
             <div class="row">
+                
                 <div class="col-md-6">
                     <p class="promo-title">Search results will be shown here...</p>
                     
@@ -188,20 +216,6 @@
             </div>
         </div>
     </section> -->
-
-        <h2>Latest News</h2>
-       <div style="overflow-x: auto; max-height: 700px;">
-            <table>
-                <tr>
-                    <th>Sr.</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Link</th>
-                    <th>Source</th>
-                </tr>
-                
-            </table>
-        </div>
 
 
     <footer id="footer" class="footer-1">

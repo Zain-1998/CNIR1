@@ -16,3 +16,4 @@ for all_data in allnews:
             break
         dawn_sports_list[count]=[news_title,image_url,link,"Dawn"]
         count+=1
+print(dawn_sports_list)
