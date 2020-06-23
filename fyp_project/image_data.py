@@ -2,6 +2,8 @@ import pytesseract
 import urllib.request
 from PIL import Image
 from datetime import datetime
+import pandas as pd
+
 xxx=datetime.now()
 ddd=xxx.strftime("%Y-%m-%d")
 ccc=xxx.strftime("%d_%m_%Y")
@@ -14,10 +16,15 @@ for i in range(1,6):
     filename="dawn_paper"+"_" + ddd +"_" + st
     extension=".jpg"
     fullpath=filepath+filename +extension
-    urllib.request.urlretrieve(image_url,fullpath)
-    img=Image.open(fullpath)
-    get_news=pytesseract.image_to_string(img)
-    news=" ".join(get_news.split())
-    dawn_paper_list[count]=[news,image_url,"Dawn"]
+    try:
+        urllib.request.urlretrieve(image_url,fullpath)
+        img=Image.open(fullpath)
+        get_news=pytesseract.image_to_string(img)
+        news=" ".join(get_news.split())
+        dawn_paper_list[count]=[news,image_url,"Dawn"]
+    except urllib.error.URLError:
+        pass
     count+=1
+# df = pd.DataFrame.from_dict(dawn_paper_list,orient='index', columns=['title','text','link','source'])
+# df.to_csv('data.csv', mode='w',header=True,index=False)
 print(dawn_paper_list)

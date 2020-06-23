@@ -20,12 +20,12 @@ def crawler(news):
             link = "https://www.news.google.com/"+link
             my_data[all_news] = [title,text,source,link]
             all_news+=1
-        
-        df = pd.DataFrame.from_dict(my_data,orient='index', columns=['title','text','link','source'])
-        df.to_csv('data.csv', mode='w',header=True,index=False)
+        if my_data:
+            df = pd.DataFrame.from_dict(my_data,orient='index', columns=['title','text','link','source'])
+            df.to_csv('data.csv', mode='w',header=True,index=False)
         return my_data
     except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
-        pass
+        return my_data
 
 def detect_news(data):
     news=data
@@ -35,7 +35,6 @@ def detect_news(data):
     final_list = [] 
     final_list1 = []   
     all_news=0
-    
     my_data = {}
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf = TfidfVectorizer()

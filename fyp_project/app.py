@@ -1,9 +1,45 @@
 from flask import Flask,render_template,url_for,request,redirect,session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import image_data
 
 import requests
 import crawl
+
+app=Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///databases/user_databases/cnir.db'
+app.secret_key="cnirsecretkeyforsesstion"
+db=SQLAlchemy(app)
+class search_history(db.Model):
+    search_id=db.Column(db.Integer,primary_key=True)
+    search_keywords=db.Column(db.String(200),nullable=False,unique=True)
+    search_datetime=db.Column(db.DateTime,default=datetime.now)
+    user_id=db.Column(db.Integer,nullable=False)
+    def __repr__(self):
+        return '<search_row %r>' % self.search_id
+class user_account(db.Model):
+    user_id=db.Column(db.Integer,primary_key=True)
+    user_firstname=db.Column(db.String(200),nullable=False)
+    user_lastname=db.Column(db.String(200),nullable=False)
+    user_email=db.Column(db.String(200),nullable=False,unique=True)
+    user_password=db.Column(db.String(200),nullable=False)
+    def __repr__(self):
+        return '<user_row %r>' % self.user_id
+class user_interest(db.Model):
+    interest_id=db.Column(db.Integer,primary_key=True)
+    interest_name=db.Column(db.String(200),nullable=False)
+    user_id=db.Column(db.Integer,nullable=False)
+    def __repr__(self):
+        return '<interest_row %r>' % self.interest_id
+
+def past_news():
+    keywords=search_history.query.all()
+    if keywords:
+        for i in keywords:
+            print("result for ",i.search_keywords)
+            news=i.search_keywords
+            print(crawl.detect_news(news))
+past_news()
 
 try:
     from latest_nation import latest_nation_list
@@ -107,38 +143,13 @@ try:
 except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
     tribune_pakistan_list={}
 
-app=Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///databases/user_databases/cnir.db'
-app.secret_key="cnirsecretkeyforsesstion"
-db=SQLAlchemy(app)
-class search_history(db.Model):
-    search_id=db.Column(db.Integer,primary_key=True)
-    search_keywords=db.Column(db.String(200),nullable=False,unique=True)
-    search_datetime=db.Column(db.DateTime,default=datetime.now)
-    user_id=db.Column(db.Integer,nullable=False)
-    def __repr__(self):
-        return '<search_row %r>' % self.search_id
-class user_account(db.Model):
-    user_id=db.Column(db.Integer,primary_key=True)
-    user_firstname=db.Column(db.String(200),nullable=False)
-    user_lastname=db.Column(db.String(200),nullable=False)
-    user_email=db.Column(db.String(200),nullable=False,unique=True)
-    user_password=db.Column(db.String(200),nullable=False)
-    def __repr__(self):
-        return '<user_row %r>' % self.user_id
-class user_interest(db.Model):
-    interest_id=db.Column(db.Integer,primary_key=True)
-    interest_name=db.Column(db.String(200),nullable=False)
-    user_id=db.Column(db.Integer,nullable=False)
-    def __repr__(self):
-        return '<interest_row %r>' % self.interest_id
-
 @app.route('/',methods=['POST','GET'])
 def index():
     if request.method=='POST':
         search_keyword=request.form['searchbar']
         news = search_keyword
         my_data=crawl.detect_news(news)
+        print(my_data)
         return render_template('index.html',get_my_data=my_data,get_search_keyword=search_keyword)
     elif "id" in session:
         return redirect(url_for("user_index"))
@@ -149,16 +160,18 @@ def user_index():
     if request.method=='POST' and "id" in session:
         search_keyword=request.form['searchbar']
         news = search_keyword
+        account=session["user"]
         my_data=crawl.detect_news(news)
+        print(my_data)
         get_keywords=request.form['searchbar']
         get_id=session["id"]
         add_search=search_history(search_keywords=get_keywords,user_id=get_id)
         try:
             db.session.add(add_search)
             db.session.commit()
-            return render_template('user_index.html',get_my_data=my_data,get_search_keyword=search_keyword)
+            return render_template('user_index.html',get_my_data=my_data,get_search_keyword=search_keyword,accounts=account)
         except:
-            return render_template('user_index.html',get_my_data=my_data,get_search_keyword=search_keyword) 
+            return render_template('user_index.html',get_my_data=my_data,get_search_keyword=search_keyword,accounts=account) 
     elif "user" in session:
         account=session["user"]
         return render_template('user_index.html',accounts=account)

@@ -90,20 +90,20 @@
             <h3>Search Result for: <q>{{get_search_keyword}}</q> </h3>
             <h3>Save News </h3>
                     <br>
-                    <div style="overflow-x: auto; max-height: 2000px;">
+                    <div style="overflow-x: auto; max-height: 1500px; width: 100%;">
                         <table>
                             <tr>
                                 <th>Title</th>
                                 <th>Description</th>
-                                <th>Source</th>
                                 <th>Link</th>
+                                <th>Source</th>
                             </tr>
                             {% for news in get_my_data %}
                                 <tr>
                                     <td>{{get_my_data[news][0]}}</td>
                                     <td>{{get_my_data[news][1]}}</td>
-                                    <td>{{get_my_data[news][3]}}</td>
-                                    <td><a href="{{get_my_data[news][2]}}" target="_blank">{{get_my_data[news][2]}}</a></td>
+                                    <td><a href="{{get_my_data[news][3]}}" target="_blank">{{get_my_data[news][3]}}</a></td>
+                                    <td>{{get_my_data[news][2]}}</td>
                                 </tr>
                             {% endfor %}
                         </table>
