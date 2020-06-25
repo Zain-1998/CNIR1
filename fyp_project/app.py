@@ -39,7 +39,7 @@ def past_news():
             print("result for ",i.search_keywords)
             news=i.search_keywords
             print(crawl.detect_news(news))
-past_news()
+# past_news()
 
 try:
     from latest_nation import latest_nation_list
