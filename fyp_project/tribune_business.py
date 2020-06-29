@@ -1,12 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
-pagelink =requests.get('https://tribune.com.pk/sports/')
+pagelink =requests.get('https://tribune.com.pk/business/')
 soup=BeautifulSoup(pagelink.content,'html.parser')
-getallnews=soup.find(class_='horizontal-news1-inner')
-allnews=getallnews.findAll(class_='horiz-news1-img')
-allnews1=getallnews.findAll(class_='horiz-news1-caption')
+getallnews=soup.find(class_='lifestyle-featured-big-thumbnails-parent')
+allnews=getallnews.findAll(class_='featured-big-thumbnail-img-lifestyle')
+allnews1=getallnews.findAll(class_='business-featured-big-thumbnail-caption')
 count=0
-tribune_sports_list={}
+tribune_business_list={}
 list1={}
 list2={}
 list3={}
@@ -25,5 +25,5 @@ for nani in allnews1:
     count+=1
 count=0
 for count in range(0,len(allnews)):
-    tribune_sports_list[count]=[list3[count],list2[count],list1[count],list4[count]]
-print(tribune_sports_list)
+    tribune_business_list[count]=[list3[count],list2[count],list1[count],list4[count]]
+print(tribune_business_list)

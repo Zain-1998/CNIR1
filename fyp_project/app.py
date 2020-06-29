@@ -1,6 +1,5 @@
 from flask import Flask,render_template,url_for,request,redirect,session
-from flask import make_response,Response,send_from_directory,send_file
-import os
+from flask import send_file
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -134,9 +133,9 @@ try:
 except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
     tribune_sports_list={}
 try:
-    from tribune_bussines import tribune_bussiness_list
+    from tribune_business import tribune_business_list
 except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
-    tribune_bussiness_list={}
+    tribune_business_list={}
 try:
     from tribune_entertainment import tribune_entertainment_list
 except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
@@ -269,7 +268,7 @@ def newsfeed():
         get_dailyPak_entertainment_list=dailyPak_entertainment_list,
         get_dailyPak_pakistan_list=dailyPak_pakistan_list,
         get_dailyPak_sports_list=dailyPak_sports_list,
-        get_tribune_bussiness_list=tribune_bussiness_list,
+        get_tribune_business_list=tribune_business_list,
         get_tribune_entertainment_list=tribune_entertainment_list,
         get_tribune_pakistan_list=tribune_pakistan_list,
         get_tribune_sports_list=tribune_sports_list)
