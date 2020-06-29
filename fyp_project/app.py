@@ -1,14 +1,17 @@
 from flask import Flask,render_template,url_for,request,redirect,session
+from flask import make_response,Response,send_from_directory,send_file
+import os
+import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import image_data
+# import image_data
 
 import requests
 import crawl
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///databases/user_databases/cnir.db'
-app.secret_key="cnirsecretkeyforsesstion"
+app.secret_key="cnirsecretkeyforsession"
 db=SQLAlchemy(app)
 class search_history(db.Model):
     search_id=db.Column(db.Integer,primary_key=True)
@@ -163,6 +166,9 @@ def user_index():
         account=session["user"]
         my_data=crawl.detect_news(news)
         print(my_data)
+        df = pd.DataFrame.from_dict(my_data,orient='index',columns=['title','description','link','source'])
+        print(df)
+        df.to_csv('databases/user_databases/news.csv',header=True,index=False)
         get_keywords=request.form['searchbar']
         get_id=session["id"]
         add_search=search_history(search_keywords=get_keywords,user_id=get_id)
@@ -384,6 +390,11 @@ def clear():
             return "There was an issue deleting history"
     else:
         return redirect(url_for("signin"))
+
+@app.route('/save-news')
+def download_file():
+    return send_file('databases/user_databases/news.csv',mimetype="text/csv",
+    as_attachment=True,attachment_filename='news.csv')
 
 if __name__ == "__main__":
     app.run(debug=True)

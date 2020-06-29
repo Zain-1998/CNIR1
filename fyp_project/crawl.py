@@ -21,15 +21,22 @@ def crawler(news):
             my_data[all_news] = [title,text,source,link]
             all_news+=1
         if my_data:
-            df = pd.DataFrame.from_dict(my_data,orient='index', columns=['title','text','link','source'])
-            df.to_csv('data.csv', mode='w',header=True,index=False)
+            df = pd.DataFrame.from_dict(my_data,orient='index',columns=['title','text','link','source'])
+            df.to_csv('databases/system_databases/data.csv', mode='a',index=False,header=False)
         return my_data
     except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
         return my_data
 
 def detect_news(data):
     news=data
-    df = pd.read_csv('data.csv')
+    try:
+        df = pd.read_csv('databases/system_databases/data.csv')
+    except pd.errors.EmptyDataError:
+        my_data={}
+        df = pd.DataFrame.from_dict(my_data,orient='index',columns=['title','text','link','source'])
+        df.to_csv('databases/system_databases/data.csv', mode='w',index=False,header=True)
+        my_data=crawler(news)
+        return my_data
     text_data = df['title']
     sim = []
     final_list = [] 
@@ -46,7 +53,7 @@ def detect_news(data):
         result = float(result)
         sim.append(result)
         final_list.append(result)
-#    print(sim)
+    # print("1",sim)
     
     final_list1 = []     
     
@@ -70,18 +77,14 @@ def detect_news(data):
             link = df.loc[index,"link"]
             source = df.loc[index,"source"]
             score = round(a,2)
-            my_data[all_news] = [title,text,link,source,score]
+            my_data[all_news] = [title,text,link,source]
             all_news+=1
         else:
-            my_data = ["Not",a]
-    if my_data[0]=="Not":
-        my_data={}
+            pass
+    if my_data=={}:
         my_data=crawler(news)
-    return my_data
-
+    return my_data        
     
-            
-        
 #index = m.index(max(m))
 #print(index)
 #title = df.loc[index,"title"]

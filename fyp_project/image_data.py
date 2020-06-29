@@ -12,7 +12,7 @@ dawn_paper_list={}
 for i in range(1,6):
     st = str(i)
     image_url="https://cdn.dawn.com/epaper/" + ddd +"/" + ccc + "_00" + st +".jpg"
-    filepath ="databases\system_databases\\"
+    filepath ="databases\system_databases\images\\"
     filename="dawn_paper"+"_" + ddd +"_" + st
     extension=".jpg"
     fullpath=filepath+filename +extension
