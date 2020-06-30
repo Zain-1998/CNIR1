@@ -70,7 +70,7 @@ def detect_news(data):
 #    print(final_list
  
     for a in final_list1: 
-        if max(final_list1) > 0.40:
+        if max(final_list1) > 0.60:
             index = sim.index(a)
             title = df.loc[index,"title"]
             text = df.loc[index,"text"]
