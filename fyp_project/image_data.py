@@ -25,6 +25,4 @@ for i in range(1,6):
     except urllib.error.URLError:
         pass
     count+=1
-# df = pd.DataFrame.from_dict(dawn_paper_list,orient='index', columns=['title','text','link','source'])
-# df.to_csv('data.csv', mode='w',header=True,index=False)
 print(dawn_paper_list)

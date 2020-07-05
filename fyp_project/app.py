@@ -3,7 +3,7 @@ from flask import send_file
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-# import image_data
+import image_data
 
 import requests
 import crawl
@@ -40,8 +40,8 @@ def past_news():
         for i in keywords:
             print("result for ",i.search_keywords)
             news=i.search_keywords
-            print(crawl.detect_news(news))
-# past_news()
+            print(crawl.crawler(news))
+past_news()
 
 try:
     from latest_nation import latest_nation_list
@@ -152,11 +152,17 @@ def index():
         news = search_keyword
         my_data=crawl.detect_news(news)
         print(my_data)
-        return render_template('index.html',get_my_data=my_data,get_search_keyword=search_keyword)
+        return render_template('index.html',get_my_data=my_data,get_search_keyword=search_keyword,
+        get_latest_nation_list=latest_nation_list,get_latest_dailyPak_list=latest_dailyPak_list,
+        get_latest_dawn_list=latest_dawn_list,get_latest_pakToday_list=latest_pakToday_list,
+        get_latest_tribune_list=latest_tribune_list)
     elif "id" in session:
         return redirect(url_for("user_index"))
     else:
-        return render_template('index.html')
+        return render_template('index.html',
+        get_latest_nation_list=latest_nation_list,get_latest_dailyPak_list=latest_dailyPak_list,
+        get_latest_dawn_list=latest_dawn_list,get_latest_pakToday_list=latest_pakToday_list,
+        get_latest_tribune_list=latest_tribune_list)
 @app.route('/user-index',methods=['POST','GET'])
 def user_index():
     if request.method=='POST' and "id" in session:
@@ -166,7 +172,6 @@ def user_index():
         my_data=crawl.detect_news(news)
         print(my_data)
         df = pd.DataFrame.from_dict(my_data,orient='index',columns=['title','description','link','source'])
-        print(df)
         df.to_csv('databases/user_databases/news.csv',header=True,index=False)
         get_keywords=request.form['searchbar']
         get_id=session["id"]
@@ -365,9 +370,10 @@ def delete_account():
         delete_user_history=search_history.query.filter_by(user_id=get_id).all()
         try:
             db.session.delete(delete_user)
+            db.session.commit()
             for users in delete_user_history:
                 db.session.delete(users)
-            db.session.commit()
+                db.session.commit()
             session.pop("user",None)
             session.pop("id",None)
             return redirect(url_for("signin"))
@@ -396,4 +402,4 @@ def download_file():
     as_attachment=True,attachment_filename='news.csv')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
