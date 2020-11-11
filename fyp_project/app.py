@@ -4,7 +4,6 @@ import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import image_data
-
 import requests
 import crawl
 
