@@ -1,38 +1,45 @@
+# Flask Libraries
 from flask import Flask,render_template,url_for,request,redirect,session
 from flask import send_file
-import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
+# Pandas Libraries
+import pandas as pd
 from datetime import datetime
 import image_data
 import requests
+# Search mechanism module
 import crawl
-
+# Flask and SQLite Configuration 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///databases/user_databases/cnir.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 app.secret_key="cnirsecretkeyforsession"
 db=SQLAlchemy(app)
+# Database table name: search_history
 class search_history(db.Model):
     search_id=db.Column(db.Integer,primary_key=True)
     search_keywords=db.Column(db.String(200),nullable=False,unique=True)
     search_datetime=db.Column(db.DateTime,default=datetime.now)
     user_id=db.Column(db.Integer,nullable=False)
-    def __repr__(self):
+    def _repr_(self):
         return '<search_row %r>' % self.search_id
+# Database table name: user_account
 class user_account(db.Model):
     user_id=db.Column(db.Integer,primary_key=True)
     user_firstname=db.Column(db.String(200),nullable=False)
     user_lastname=db.Column(db.String(200),nullable=False)
     user_email=db.Column(db.String(200),nullable=False,unique=True)
     user_password=db.Column(db.String(200),nullable=False)
-    def __repr__(self):
+    def _repr_(self):
         return '<user_row %r>' % self.user_id
+# Database table name: user_interest
 class user_interest(db.Model):
     interest_id=db.Column(db.Integer,primary_key=True)
     interest_name=db.Column(db.String(200),nullable=False)
     user_id=db.Column(db.Integer,nullable=False)
-    def __repr__(self):
+    def _repr_(self):
         return '<interest_row %r>' % self.interest_id
-
+# News extraction based on Search history
 def past_news():
     keywords=search_history.query.all()
     if keywords:
@@ -41,7 +48,7 @@ def past_news():
             news=i.search_keywords
             print(crawl.crawler(news))
 past_news()
-
+# Latest news extraction
 try:
     from latest_nation import latest_nation_list
 except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
@@ -62,7 +69,7 @@ try:
     from latest_tribune import latest_tribune_list
 except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
     latest_tribune_list={}
-
+# Interest based news extraction
 try:
     from nation_sports import nation_sports_list
 except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
@@ -143,7 +150,7 @@ try:
     from tribune_pakistan import tribune_pakistan_list
 except (requests.exceptions.ConnectionError,requests.exceptions.HTTPError,requests.exceptions.ConnectTimeout):
     tribune_pakistan_list={}
-
+# Landing page
 @app.route('/',methods=['POST','GET'])
 def index():
     if request.method=='POST':
@@ -162,6 +169,7 @@ def index():
         get_latest_nation_list=latest_nation_list,get_latest_dailyPak_list=latest_dailyPak_list,
         get_latest_dawn_list=latest_dawn_list,get_latest_pakToday_list=latest_pakToday_list,
         get_latest_tribune_list=latest_tribune_list)
+# User homepage
 @app.route('/user-index',methods=['POST','GET'])
 def user_index():
     if request.method=='POST' and "id" in session:
@@ -186,6 +194,7 @@ def user_index():
         return render_template('user_index.html',accounts=account)
     else:
         return redirect(url_for("signin"))
+# User dashboard
 @app.route('/dashboard',methods=['POST','GET'])
 def dashboard():
     if request.method == 'POST' and "id" in session:
@@ -238,6 +247,7 @@ def dashboard():
         business=business,pakistan=pakistan)
     else:
         return redirect(url_for("signin"))
+# Interest based News page
 @app.route('/newsfeed')
 def newsfeed():
     if "id" in session:
@@ -278,12 +288,14 @@ def newsfeed():
         get_tribune_sports_list=tribune_sports_list)
     else:
         return redirect(url_for("signin"))
+# Latest news page
 @app.route('/latest-news')
 def latest_news():
     return render_template('latest_news.html',
     get_latest_nation_list=latest_nation_list,get_latest_dailyPak_list=latest_dailyPak_list,
     get_latest_dawn_list=latest_dawn_list,get_latest_pakToday_list=latest_pakToday_list,
     get_latest_tribune_list=latest_tribune_list)
+# Sign in page
 @app.route('/signin',methods=['POST','GET'])
 def signin():
     if request.method=='POST':
@@ -299,6 +311,7 @@ def signin():
         return redirect('/dashboard')
     else:
         return render_template('signin.html')
+# Sign up page
 @app.route('/signup',methods=['POST','GET'])
 def signup():
     if request.method=='POST':
@@ -316,12 +329,14 @@ def signup():
             return 'Account already exists.'
     else:
         return render_template('signup.html')
+# Sign out
 @app.route('/signout')
 def signout():
     if "user" in session and "id" in session:
         session.pop("user",None)
         session.pop("id",None)
         return redirect(url_for("index"))
+# Change name
 @app.route('/change-name',methods=['POST','GET'])
 def change_name():
     if request.method == 'POST':
@@ -341,6 +356,7 @@ def change_name():
         return render_template('change_name.html')
     else:
         return redirect(url_for("signin"))
+# Change password
 @app.route('/change-password',methods=['POST','GET'])
 def change_password():
     if request.method == 'POST':
@@ -361,6 +377,7 @@ def change_password():
         return render_template('change_password.html')
     else:
         return redirect(url_for("signin"))
+# Account delete
 @app.route('/delete-account')
 def delete_account():
     if "user" in session and "id" in session:
@@ -380,6 +397,7 @@ def delete_account():
             return "There was an issue deleting history"
     else:
         return redirect(url_for("signin"))
+# News history clear
 @app.route('/clear')
 def clear():
     if "user" in session and "id" in session:
@@ -394,11 +412,11 @@ def clear():
             return "There was an issue deleting history"
     else:
         return redirect(url_for("signin"))
-
+# Download news
 @app.route('/save-news')
 def download_file():
     return send_file('databases/user_databases/news.csv',mimetype="text/csv",
     as_attachment=True,attachment_filename='news.csv')
-
+# Flask run
 if __name__ == "__main__":
     app.run(debug=False)

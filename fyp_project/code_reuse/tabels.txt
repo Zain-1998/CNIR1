@@ -38,3 +38,9 @@ class user_intrest(db.Model):
 // news show
 
 
+<div class="row" style="width: 100%; margin-left: 0px;">
+            <div class="alert alert-danger alert-dismissible" role="alert"style="width: 100%;margin-left: 0px; margin-bottom:0px">
+            <button type="button" onclick="this.parentNode.parentNode.removeChild(this.parentNode);" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <h3>Latest News</h3> <marquee style="width: 100%; height: 30px;"><p style="font-family: Impact; font-size: 14pt">Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor Lorem ipsum dolor!</p></marquee>
+        </div>
+    </div> 
